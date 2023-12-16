@@ -484,3 +484,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+metastore_db/
+laboratory-work-1/formatted-data/10K-formatted
