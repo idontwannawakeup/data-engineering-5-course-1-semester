@@ -2,6 +2,8 @@ import io
 import os
 from zipfile import ZipFile
 import requests
+import aiohttp
+import asyncio
 
 download_uris = [
     "https://divvy-tripdata.s3.amazonaws.com/Divvy_Trips_2018_Q4.zip",
@@ -22,10 +24,10 @@ def extract_filename_from_uri(uri: str):
     return uri.split("/")[-1]
 
 
-def download_zip_file(uri: str) -> ZipFile:
+async def download_zip_file(uri: str, session) -> ZipFile:
     try:
-        response = requests.get(uri)
-        return ZipFile(io.BytesIO(response.content))
+        async with session.get(uri) as response:
+            return ZipFile(io.BytesIO(await response.read()))
     except requests.exceptions.RequestException as e:
         print(f"Failed to download the file from the following uri: {uri}")
         return None
@@ -34,15 +36,16 @@ def download_zip_file(uri: str) -> ZipFile:
         return None
 
 
-def main():
+async def main():
     create_downloads_folder_if_not_exists()
-    for uri in download_uris:
-        zip_file = download_zip_file(uri)
-        if zip_file is not None:
-            print(f"{uri} - downloaded")
-            zip_file.filename = extract_filename_from_uri(uri)
-            zip_file.extractall(f"./downloads/")
+    async with aiohttp.ClientSession() as session:
+        for uri in download_uris:
+            zip_file = await download_zip_file(uri, session)
+            if zip_file is not None:
+                print(f"{uri} - downloaded")
+                zip_file.filename = extract_filename_from_uri(uri)
+                zip_file.extractall(f"./downloads/")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
