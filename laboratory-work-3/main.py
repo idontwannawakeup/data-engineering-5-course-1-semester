@@ -1,3 +1,4 @@
+import csv
 import json
 import os
 import boto3
@@ -41,9 +42,18 @@ def get_json_files_from_folders(folder_path: str):
     return json_files
 
 
+def write_json_to_csv(json_files):
+    for json_file in json_files:
+        json_keys = list(json_file["content"].keys())
+        with open(json_file["filename"].replace(".json", ".csv"), 'w') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(json_keys)
+            writer.writerow([json_file["content"][json_key] for json_key in json_keys])
+
+
 def main():
     json_files = get_json_files_from_folders("./data")
-    print(json_files)
+    write_json_to_csv(json_files)
 
 
 if __name__ == "__main__":
