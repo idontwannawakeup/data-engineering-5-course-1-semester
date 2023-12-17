@@ -15,6 +15,16 @@ services:
         interval: 5s
         timeout: 5s
         retries: 5
+    postgres-pgadmin:
+      image: dpage/pgadmin4:6.11
+      restart: always
+      volumes:
+        - ./pgadmin-data:/var/lib/pgadmin
+      ports:
+        - '5433:80'
+      environment:
+        - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+        - PGADMIN_DEFAULT_PASSWORD=postgres
     test:
       image: "lab-4"
       volumes:
