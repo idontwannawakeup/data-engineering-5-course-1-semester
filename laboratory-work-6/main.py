@@ -66,7 +66,7 @@ def write_amount_of_cars_per_year_to_parquet(data):
     """
 
     amount_of_cars_per_year_to_parquet_query = f"""
-        COPY ({amount_of_cars_per_year_query}) TO 'cars_per_year_parquet' (FORMAT PARQUET, PARTITION_BY model_year, ALLOW_OVERWRITE true);
+        COPY ({amount_of_cars_per_year_query}) TO 'cars_per_year_parquet' (FORMAT PARQUET, PARTITION_BY model_year, OVERWRITE_OR_IGNORE 1);
     """
 
     data.query(table_name, amount_of_cars_per_year_to_parquet_query)
